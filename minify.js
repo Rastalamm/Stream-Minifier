@@ -4,36 +4,24 @@ var util = require('util');
 var parseArgs = require('minimist');
 
 var argv = parseArgs(process.argv.slice(2));
-//read the command line for the input
 
-console.log('the input', argv['input']);
-console.log('the input', argv['output']);
+var reader = fs.createReadStream(argv['input'], {encoding : 'utf8'});
+var writer = fs.createWriteStream(argv['output'], {encoding : 'utf8'});
 
+var Transform = require('stream').Transform;
 
-//read input file
+util.inherits(Minifying, Transform);
 
+function Minifying(data){
+  Transform.call(this, {objectMode: true});
+}
 
-// function getReadableStreamSomehow(){
-//   fs.readFile(THE INPUT FROM THE COMMAND LINE, function (err, data) {
-//     if (err) throw err;
-//     console.log(data);
-//     return data;
-//   });
+Minifying.prototype._transform = function(chunk, encoding, done){
+  chunk = chunk.replace(/(\s+)/gm,'');
+  this.push(chunk);
+  done();
+};
 
-// }
+var shrinker = new Minifying();
 
-
-// var readable = getReadableStreamSomehow();
-// readable.on('data', function(chunk) {
-//   console.log('got %d bytes of data', chunk.length);
-// });
-
-
-
-
-
-//minify it
-//remove all the spaces
-
-
-//
+reader.pipe(shrinker).pipe(writer);
