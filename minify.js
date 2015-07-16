@@ -5,6 +5,10 @@ var parseArgs = require('minimist');
 
 var argv = parseArgs(process.argv.slice(2));
 
+if(Object.keys(argv).indexOf('input') === -1 || Object.keys(argv).indexOf('output') === -1){
+  throw new Error('Need an input and output identifier.');
+}
+
 var reader = fs.createReadStream(argv['input'], {encoding : 'utf8'});
 var writer = fs.createWriteStream(argv['output'], {encoding : 'utf8'});
 
